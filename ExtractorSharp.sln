@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractorSharp", "ExtractorSharp\ExtractorSharp.csproj", "{37D3351F-80F8-4905-A06F-65C430EC5EE2}"
 EndProject
@@ -11,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractorSharp.UnitTest", "ExtractorSharp.UnitTest\ExtractorSharp.UnitTest.csproj", "{DDD06F25-69C5-423B-B273-44FF069BF09B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractorSharp.Json", "ExtractorSharp.Json\ExtractorSharp.Json.csproj", "{06D35140-706A-40CE-9373-6B948F092A30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractorSharp.Plugin", "ExtractorSharp.Plugin\ExtractorSharp.Plugin.csproj", "{FCD3870B-E600-430F-8484-36ECF29195D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,6 +106,22 @@ Global
 		{06D35140-706A-40CE-9373-6B948F092A30}.Release|x64.Build.0 = Release|Any CPU
 		{06D35140-706A-40CE-9373-6B948F092A30}.Release|x86.ActiveCfg = Release|Any CPU
 		{06D35140-706A-40CE-9373-6B948F092A30}.Release|x86.Build.0 = Release|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Debug|ARM.Build.0 = Debug|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Debug|x64.Build.0 = Debug|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Debug|x86.Build.0 = Debug|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Release|ARM.ActiveCfg = Release|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Release|ARM.Build.0 = Release|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Release|x64.ActiveCfg = Release|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Release|x64.Build.0 = Release|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Release|x86.ActiveCfg = Release|Any CPU
+		{FCD3870B-E600-430F-8484-36ECF29195D8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
