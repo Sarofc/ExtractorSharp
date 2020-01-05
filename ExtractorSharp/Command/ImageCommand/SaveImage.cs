@@ -4,13 +4,15 @@ using ExtractorSharp.Core.Command;
 using ExtractorSharp.Core.Composition;
 using ExtractorSharp.Core.Model;
 
-namespace ExtractorSharp.Command.ImageCommand {
+namespace ExtractorSharp.Command.ImageCommand
+{
     /// <summary>
     ///     保存贴图
     ///     不可撤销
     ///     可宏命令
     /// </summary>
-    internal class SaveImage : ISingleAction, ICommandMessage {
+    internal class SaveImage : ISingleAction, ICommandMessage
+    {
         private Album Album { set; get; }
         private int Digit { set; get; }
         private bool FullPath { set; get; }
@@ -32,76 +34,105 @@ namespace ExtractorSharp.Command.ImageCommand {
 
         public int[] Indices { set; get; }
 
-        public void Do(params object[] args) {
+        public void Do(params object[] args)
+        {
             Album = args[0] as Album;
-            Mode = (int) args[1];
+            Mode = (int)args[1];
             Indices = args[2] as int[];
             Path = args[3] as string;
-            if (args.Length > 4) {
+            if (args.Length > 4)
+            {
                 Prefix = (args[4] as string).Replace("\\", "/");
-                Increment = (int) args[5];
-                Digit = (int) args[6];
-                FullPath = (bool) args[7];
+                Increment = (int)args[5];
+                Digit = (int)args[6];
+                FullPath = (bool)args[7];
                 OnSaving = args[8] as SpriteEffect;
             }
-            if (args.Length > 9) {
+            if (args.Length > 9)
+            {
                 AllImage = (bool)args[9];
             }
             Action(Album, Indices);
         }
 
-        public void Redo() {
+        public void Redo()
+        {
             // Method intentionally left empty.
         }
 
-        public void Undo() {
+        public void Undo()
+        {
             // Method intentionally left empty.
         }
 
-        public void Action(Album album, int[] indexes) {
-            if (Mode == 0) {
+        public void Action(Album album, int[] indexes)
+        {
+            if (Mode == 0)
+            {
                 //当保存模式为单张贴图时
                 album.List[indexes[0]].Picture.Save(Path);
-            } else {
+            }
+            else
+            {
                 //是否加入文件的路径
                 var dir = $"{Path}/{(FullPath ? album.Path : album.Name)}/{Prefix}";
                 dir = dir.Replace('\\', '/');
                 var index = dir.LastIndexOf("/");
                 dir = dir.Substring(0, index + 1);
                 var prefix = dir.Substring(index);
-                if (File.Exists(dir)) {
+                if (File.Exists(dir))
+                {
                     dir += "_";
                 }
-                if (!Directory.Exists(dir)) {
+                if (!Directory.Exists(dir))
+                {
                     Directory.CreateDirectory(dir);
                 }
-                if (AllImage) {
+                if (AllImage)
+                {
                     indexes = new int[album.List.Count];
-                    for(var i = 0; i < indexes.Length; i++) {
+                    for (var i = 0; i < indexes.Length; i++)
+                    {
                         indexes[i] = i;
                     }
-                } 
+                }
+
+
                 var max = Math.Min(indexes.Length, album.List.Count);
-                for (var i = 0; i < max; i++) {
-                    if (indexes[i] < 0) {
+
+                var positionList = new System.Collections.Generic.List<OffsetData>(max);
+
+                for (var i = 0; i < max; i++)
+                {
+                    if (indexes[i] < 0)
+                    {
                         continue;
                     }
                     var entity = album.List[indexes[i]];
                     var name = (Increment == -1 ? indexes[i] : Increment + i).ToString();
-                    while (name.Length < Digit) {
+                    while (name.Length < Digit)
+                    {
                         name = string.Concat("0", name);
                     }
                     var path = $"{dir}{prefix}{name}.png"; //文件名格式:文件路径/贴图索引.png
                     var image = entity.Picture;
-                    if (OnSaving != null) {
-                        foreach (SpriteEffect action in OnSaving.GetInvocationList()) {
+                    if (OnSaving != null)
+                    {
+                        foreach (SpriteEffect action in OnSaving.GetInvocationList())
+                        {
                             action.Invoke(entity, ref image);
                             image = image ?? entity.Picture;
                         }
                     }
                     var parent = System.IO.Path.GetDirectoryName(path);
                     image.Save(path); //保存贴图
+
+                    positionList.Add(new OffsetData(entity.Location));
                 }
+
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(positionList);
+                var jsonPath = $"{dir}{prefix}info.json";
+                File.WriteAllText(jsonPath, json);
             }
         }
 
@@ -110,5 +141,18 @@ namespace ExtractorSharp.Command.ImageCommand {
         public bool IsChanged => false;
 
         public string Name => "SaveImage";
+
+        [System.Serializable]
+        public struct OffsetData
+        {
+            public int x;
+            public int y;
+
+            public OffsetData(System.Drawing.Point point)
+            {
+                x = point.X;
+                y = point.Y;
+            }
+        }
     }
 }
