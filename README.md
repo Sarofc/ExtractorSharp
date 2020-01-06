@@ -12,6 +12,8 @@ ExtractorSharp
    + 导出图片时，同时以json格式导出图片坐标数据，提供给其他游戏引擎使用。
    + 升级到了vs2019，重新build了download插件，以适应新版本程序。
 
+   + [下载 1.7.3.1-special ](https://github.com/Sarofc/ExtractorSharp/releases/tag/1.7.3.1-special)
+
 关于
 ---
    ExtractorSharp是一个用于编辑IMG,NPK等类型文件的软件
