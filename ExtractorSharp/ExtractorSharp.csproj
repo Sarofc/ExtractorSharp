@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ExtractorSharp</RootNamespace>
     <AssemblyName>ExtractorSharp</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -130,6 +130,7 @@
     <Compile Include="Command\ImageCommand\DyeImage.cs" />
     <Compile Include="Command\ImageCommand\PasteSingleImage.cs" />
     <Compile Include="Command\ImageCommand\SaveGif.cs" />
+    <Compile Include="Command\ImageCommand\SaveAllImage.cs" />
     <Compile Include="Command\LayerCommand\AddCompareLayer.cs" />
     <Compile Include="Command\LayerCommand\AddLayer.cs" />
     <Compile Include="Command\LayerCommand\DeleteLayer.cs" />

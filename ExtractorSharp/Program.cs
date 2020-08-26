@@ -131,6 +131,7 @@ namespace ExtractorSharp {
             Controller.Registry("clearMerge", typeof(ClearMerge));
             Controller.Registry("runMerge", typeof(RunMerge));
             Controller.Registry("moveMerge", typeof(MoveMerge));
+            Controller.Registry("saveAllImage", typeof(SaveAllImage));
 
             Controller.Registry("canvasImage", typeof(CanvasImage));
             Controller.Registry("uncanvasImage", typeof(UnCanvasImage));

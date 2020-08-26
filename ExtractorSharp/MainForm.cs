@@ -25,14 +25,19 @@ using ExtractorSharp.Effect.Sprite;
 using ExtractorSharp.EventArguments;
 using ExtractorSharp.View.Pane;
 
-namespace ExtractorSharp {
-    public partial class MainForm : ESForm {
+namespace ExtractorSharp
+{
+    public partial class MainForm : ESForm
+    {
         private int move_mode = -1;
 
-        private string Extensions {
-            get {
+        private string Extensions
+        {
+            get
+            {
                 var ex = string.Empty;
-                foreach (var support in Connector.FileSupports) {
+                foreach (var support in Connector.FileSupports)
+                {
                     ex = string.Concat(ex, $"*{support.Extension};");
                 }
                 return ex;
@@ -44,7 +49,8 @@ namespace ExtractorSharp {
         private Album ExchangeSelectedFile { set; get; }
 
 
-        public MainForm() : base(new MainConnector()) {
+        public MainForm() : base(new MainConnector())
+        {
             ((MainConnector)Connector).MainForm = this;
             InitializeComponent();
             Controller = Program.Controller;
@@ -71,7 +77,8 @@ namespace ExtractorSharp {
         private Drawer Drawer { get; }
         private Controller Controller { get; }
 
-        public string Path {
+        public string Path
+        {
             set => pathBox.Text = value;
             get => pathBox.Text;
         }
@@ -86,20 +93,23 @@ namespace ExtractorSharp {
         private IPaint Border { set; get; }
 
 
-        private void AddEffect() {
+        private void AddEffect()
+        {
             AddEffect(new UnCanvasEffect());
             AddEffect(new LinearDodgeEffect(Config));
             AddEffect(new DyeEffect(Config));
             AddEffect(new RealPositionEffect(Config));
         }
 
-        private void AddEffect(IEffect effect) {
+        private void AddEffect(IEffect effect)
+        {
             Connector.Effects.Add(effect);
             effect.Enable = Config[$"{effect.Name}SpriteEffect"].Boolean;
             effect.Index = Config[$"{effect.Name}SpriteEffectIndex"].Integer;
         }
 
-        private void AddConfig() {
+        private void AddConfig()
+        {
             linearDodgeBox.Checked = Config["LinearDodge"].Boolean;
             realPositionBox.Checked = Config["RealPosition"].Boolean;
             pixelateBox.Checked = Config["Pixelate"].Boolean;
@@ -109,16 +119,21 @@ namespace ExtractorSharp {
             Ruler.Visible = Config["Ruler"].Boolean;
         }
 
-        private void AddBrush() {
-            foreach (var entry in Drawer.Brushes) {
+        private void AddBrush()
+        {
+            foreach (var entry in Drawer.Brushes)
+            {
                 var item = new ToolStripMenuItem(Language[entry.Key]);
                 item.CheckOnClick = true;
-                if (Drawer.IsSelect(entry.Key)) {
+                if (Drawer.IsSelect(entry.Key))
+                {
                     item.Checked = true;
                 }
-                item.Click += (o, e) => {
+                item.Click += (o, e) =>
+                {
                     Drawer.Select(entry.Key);
-                    foreach (ToolStripMenuItem i in toolsMenu.DropDownItems) {
+                    foreach (ToolStripMenuItem i in toolsMenu.DropDownItems)
+                    {
                         i.Checked = false;
                     }
                     item.Checked = true;
@@ -127,7 +142,8 @@ namespace ExtractorSharp {
             }
         }
 
-        private void AddPaint() {
+        private void AddPaint()
+        {
             Ruler = new Ruler();
             Grid = new Grid();
             Border = new Border();
@@ -136,7 +152,8 @@ namespace ExtractorSharp {
             AddPaint(borderItem, Border);
         }
 
-        private void AddPaint(ToolStripMenuItem item, IPaint paint) {
+        private void AddPaint(ToolStripMenuItem item, IPaint paint)
+        {
             paint.Visible = item.Checked;
             item.CheckOnClick = true;
             item.Click += Flush;
@@ -148,29 +165,35 @@ namespace ExtractorSharp {
         /// <summary>
         ///     给不需要动态参数的窗口-菜单添加监听
         /// </summary>
-        private void AddShow() {
+        private void AddShow()
+        {
             AddShow(aboutItem, "about");
             AddShow(feedbackItem, "debug", "feedback");
             AddShow(settingItem, "setting");
         }
 
-        public void AddShow(ToolStripMenuItem item, string name, params object[] args) {
+        public void AddShow(ToolStripMenuItem item, string name, params object[] args)
+        {
             item.Click += (o, e) => Viewer.Show(name, args);
         }
 
 
-        public void AddCommand(Control control, string name) {
+        public void AddCommand(Control control, string name)
+        {
             control.Click += (o, e) => Connector.Do(name, Connector);
         }
 
-        public void AddCommand(ToolStripItem control, string name) {
+        public void AddCommand(ToolStripItem control, string name)
+        {
             control.Click += (o, e) => Connector.Do(name, Connector);
         }
 
 
-        public ToolStripMenuItem AddMenuItem(IMenuItem item) {
+        public ToolStripMenuItem AddMenuItem(IMenuItem item)
+        {
             var toolItem = new ToolStripMenuItem(Language[item.Name]);
-            switch (item.Parent) {
+            switch (item.Parent)
+            {
                 case MenuItemType.MAIN:
                     mainMenu.Items.Add(toolItem);
                     break;
@@ -202,9 +225,11 @@ namespace ExtractorSharp {
                     return null;
             }
 
-            if (!string.IsNullOrEmpty(item.Command)) {
+            if (!string.IsNullOrEmpty(item.Command))
+            {
                 var command = item.Command;
-                switch (item.Click) {
+                switch (item.Click)
+                {
                     case ClickType.Command:
                         AddCommand(toolItem, command);
                         break;
@@ -218,13 +243,17 @@ namespace ExtractorSharp {
             return toolItem;
         }
 
-        public void AddChildItem(IMenuItem item) {
-            foreach (var child in item.Children) {
+        public void AddChildItem(IMenuItem item)
+        {
+            foreach (var child in item.Children)
+            {
                 var childItem = new ToolStripMenuItem(Language[child.Name]);
                 childItem.DropDownItems.Add(childItem);
-                if (string.IsNullOrEmpty(item.Command)) {
+                if (string.IsNullOrEmpty(item.Command))
+                {
                     var command = child.Command;
-                    switch (item.Click) {
+                    switch (item.Click)
+                    {
                         case ClickType.Command:
                             AddCommand(childItem, command);
                             break;
@@ -234,7 +263,8 @@ namespace ExtractorSharp {
                     }
                 }
 
-                if (item.Children != null) {
+                if (item.Children != null)
+                {
                     AddChildItem(child);
                 }
             }
@@ -244,7 +274,8 @@ namespace ExtractorSharp {
         /// <summary>
         ///     添加监听
         /// </summary>
-        private void AddListenter() {
+        private void AddListenter()
+        {
             versionItem.Click += ShowFeature;
             helpItem.Click += ShowHelp;
             addFileItem.Click += AddFile;
@@ -263,6 +294,7 @@ namespace ExtractorSharp {
             addMergeItem.Click += AddMerge;
             addOutsideMergeItem.Click += AddOutMerge;
             runMergeItem.Click += DisplayMerge;
+            saveAllImgesItem.Click += SaveAsAlbum;
             albumList.SelectedIndexChanged += ImageChanged;
             albumList.ItemDeleted += DeleteImg;
             albumList.ItemDraged += MoveFileIndex;
@@ -379,9 +411,11 @@ namespace ExtractorSharp {
             RecentChanged(null, null);
         }
 
-        private void ReplaceFromList(object sender, EventArgs e) {
+        private void ReplaceFromList(object sender, EventArgs e)
+        {
             var item = Connector.SelectedFile;
-            if (item == null || ReplaceStack.Count == 0) {
+            if (item == null || ReplaceStack.Count == 0)
+            {
                 return;
             }
             var f = ReplaceStack.Last();
@@ -390,24 +424,29 @@ namespace ExtractorSharp {
             OnReplaceStackChanged();
         }
 
-        private void AddReplace(object sender, EventArgs e) {
+        private void AddReplace(object sender, EventArgs e)
+        {
             var array = Connector.CheckedFiles;
             ReplaceStack.AddRange(array);
             OnReplaceStackChanged();
         }
 
-        private void OnReplaceStackChanged() {
+        private void OnReplaceStackChanged()
+        {
             var stack = ReplaceStack.ToArray();
             Array.Reverse(stack);
             var arr0 = new ToolStripMenuItem[stack.Length];
             var arr1 = new ToolStripMenuItem[stack.Length];
-            for (var i = 0; i < stack.Length; i++) {
+            for (var i = 0; i < stack.Length; i++)
+            {
                 var f = stack[i];
                 arr0[i] = _GetReplaceItem(f);
                 arr1[i] = _GetReplaceItem(f);
-                arr1[i].Click += (o, s) => {
+                arr1[i].Click += (o, s) =>
+                {
                     var item = Connector.SelectedFile;
-                    if (item == null) {
+                    if (item == null)
+                    {
                         return;
                     }
                     Connector.Do("replaceFileFromList", item, f);
@@ -426,7 +465,8 @@ namespace ExtractorSharp {
             replaceToThisFileItem.DropDownItems.Clear();
             replaceToThisFileItem.DropDownItems.AddRange(arr1);
 
-            if (stack.Length > 0) {
+            if (stack.Length > 0)
+            {
                 addReplaceItem.DropDownItems.AddSeparator();
                 addReplaceItem.DropDownItems.Add(clearItem0);
                 replaceToThisFileItem.DropDownItems.AddSeparator();
@@ -434,12 +474,14 @@ namespace ExtractorSharp {
             }
         }
 
-        private void ClearReplace(object sender, EventArgs e) {
+        private void ClearReplace(object sender, EventArgs e)
+        {
             ReplaceStack.Clear();
             OnReplaceStackChanged();
         }
 
-        private ToolStripMenuItem _GetReplaceItem(Album f) {
+        private ToolStripMenuItem _GetReplaceItem(Album f)
+        {
             var item = new ToolStripMenuItem(f.Name);
             return item;
         }
@@ -452,110 +494,137 @@ namespace ExtractorSharp {
 
         private void CanvasMoveDown(object sender, EventArgs e) => Move(0, Config["MoveStep"].Integer);
 
-        private void CanvasMoveHere(object sender, EventArgs e) {
+        private void CanvasMoveHere(object sender, EventArgs e)
+        {
             Drawer.Brushes["MoveTool"].Location = Drawer.CurrentLayer.RealLocation;
             Drawer.Move(1, Hotpot);
             LayerFlush();
         }
 
-        private void Move(int x, int y) {
-            Drawer.Brushes["MoveTool"].Location =Drawer.CurrentLayer.RealLocation;
+        private void Move(int x, int y)
+        {
+            Drawer.Brushes["MoveTool"].Location = Drawer.CurrentLayer.RealLocation;
             Drawer.Move(1, Drawer.CurrentLayer.RealLocation.Add(new Point(x, y)));
             LayerFlush();
         }
 
-        private void ShowHelp(object sender, EventArgs e) {
+        private void ShowHelp(object sender, EventArgs e)
+        {
             Process.Start($"{Config["WebHost"]}/es/guide/");
         }
 
-        private void ShowFeature(object sender, EventArgs e) {
+        private void ShowFeature(object sender, EventArgs e)
+        {
             Process.Start($"{Config["WebHost"]}/es/feature/{Config["Version"]}.html");
         }
 
-        private void AddCompareLayer(object sender, EventArgs e) {
-            Connector.Do("addCompareLayer",Connector.CheckedFiles);
+        private void AddCompareLayer(object sender, EventArgs e)
+        {
+            Connector.Do("addCompareLayer", Connector.CheckedFiles);
         }
 
-        private void RecoverFile(object sender, EventArgs e) {
-            if (!Directory.Exists(Config["ResourcePath"].Value)) {
+        private void RecoverFile(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(Config["ResourcePath"].Value))
+            {
                 Connector.SendError("SelectPathIsInvalid");
                 return;
             }
-            if (Connector.CheckedFiles.Length == 0) {
+            if (Connector.CheckedFiles.Length == 0)
+            {
                 return;
             }
             Connector.Do("recoverFile", Connector.CheckedFiles);
         }
 
-        private void RepairFile(object sender, EventArgs e) {
-            if (!Directory.Exists(Config["ResourcePath"].Value)) {
+        private void RepairFile(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(Config["ResourcePath"].Value))
+            {
                 Connector.SendError("SelectPathIsInvalid");
                 return;
             }
-            if (Connector.CheckedFiles.Length == 0) {
+            if (Connector.CheckedFiles.Length == 0)
+            {
                 return;
             }
             Connector.Do("repairFile", Connector.CheckedFiles);
         }
 
-        private void Dye(object sender, EventArgs e) {
+        private void Dye(object sender, EventArgs e)
+        {
             Config["Dye"] = new ConfigValue(dyeBox.Checked);
             Flush(sender, e);
         }
 
-        private void DeleteLayer(object sender, ItemEventArgs e) {
+        private void DeleteLayer(object sender, ItemEventArgs e)
+        {
             var indices = e.Indices;
             if (indices.Length > 0 && MessageBox.Show(Language["DeleteLayerTips"], Language["Tips"],
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) ==
-                DialogResult.OK) {
+                DialogResult.OK)
+            {
                 Connector.Do("deleteLayer", indices);
             }
         }
 
-        private void MoveLayer(object sender, ItemEventArgs e) {
+        private void MoveLayer(object sender, ItemEventArgs e)
+        {
             var index = e.Index;
             var target = e.Target;
-            if (index > 1 && target > 1) {
+            if (index > 1 && target > 1)
+            {
                 Connector.Do("moveLayer", index, target);
             }
         }
 
-        private void UpLayer(object sender, EventArgs e) {
+        private void UpLayer(object sender, EventArgs e)
+        {
             var index = layerList.SelectedIndex;
-            if (index > 2) {
+            if (index > 2)
+            {
                 Connector.Do("moveLayer", index, index - 1);
             }
         }
 
-        private void DownLayer(object sender, EventArgs e) {
+        private void DownLayer(object sender, EventArgs e)
+        {
             var index = layerList.SelectedIndex;
-            if (index > 1 && index < layerList.Items.Count - 1) {
+            if (index > 1 && index < layerList.Items.Count - 1)
+            {
                 Connector.Do("moveLayer", index, index + 1);
             }
         }
 
-        private void RenameLayer(object sender, EventArgs e) {
+        private void RenameLayer(object sender, EventArgs e)
+        {
             var item = layerList.SelectedItem;
-            if (item is Layer layer) {
+            if (item is Layer layer)
+            {
                 var dialog = new ESTextDialog(Connector);
                 dialog.InputText = layer.Name;
                 dialog.Text = Language["Rename"];
-                if (dialog.Show() == DialogResult.OK) {
+                if (dialog.Show() == DialogResult.OK)
+                {
                     Connector.Do("renameLayer", layer, dialog.InputText);
                     layerList.Refresh();
                 }
-            } else {
+            }
+            else
+            {
                 messager.ShowWarnning(Language["RenameLayerTips"]);
             }
         }
 
-        private void BeforeDraw(object sender, LayerEventArgs e) {
+        private void BeforeDraw(object sender, LayerEventArgs e)
+        {
             Grid.Tag = Config["GridGap"].Integer;
             Grid.Size = box.Size;
             var entity = Connector.SelectedImage;
             entity = entity != null && entity.Type == ColorBits.LINK ? entity.Target : entity;
             Drawer.CurrentLayer.Tag = entity;
-            if (entity?.Picture != null) {
+            if (entity?.Picture != null)
+            {
                 if (entity.Type == ColorBits.LINK && entity.Target != null) entity = entity.Target;
                 var pictrue = entity.Picture;
                 if (linearDodgeBox.Checked) pictrue = pictrue.LinearDodge();
@@ -574,7 +643,8 @@ namespace ExtractorSharp {
             ruler.Size = box.Size;
         }
 
-        private void RecentChanged(object sender, EventArgs e) {
+        private void RecentChanged(object sender, EventArgs e)
+        {
             var recent = Connector.Recent;
 
             openRecentItem.DropDownItems.Clear();
@@ -582,7 +652,8 @@ namespace ExtractorSharp {
             var count = Math.Min(10, recent.Count);
             var openArr = new ToolStripMenuItem[count];
             var addArr = new ToolStripMenuItem[count];
-            for (var i = 0; i < count; i++) {
+            for (var i = 0; i < count; i++)
+            {
                 var re = recent[i];
                 openArr[i] = _GetRecentItem(re);
                 openArr[i].Click += (o, ex) => { Connector.AddFile(true, re); };
@@ -610,10 +681,12 @@ namespace ExtractorSharp {
             recent = recent.FindAll(r => r.ToUpper().EndsWith(".NPK"));
             count = Math.Min(10, recent.Count);
             var saveArr = new ToolStripMenuItem[count];
-            for (var i = 0; i < count; i++) {
+            for (var i = 0; i < count; i++)
+            {
                 var re = recent[i];
                 saveArr[i] = _GetRecentItem(re);
-                saveArr[i].Click += (o, ex) => {
+                saveArr[i].Click += (o, ex) =>
+                {
                     Connector.Save(re);
                     Connector.SavePath = re;
                 };
@@ -626,7 +699,8 @@ namespace ExtractorSharp {
             saveRecentItem.DropDownItems.Add(clearSave);
         }
 
-        private ToolStripMenuItem _GetRecentItem(string recent) {
+        private ToolStripMenuItem _GetRecentItem(string recent)
+        {
             var item = new ToolStripMenuItem();
             item.Text = recent.GetSuffix();
             item.ToolTipText = recent;
@@ -634,51 +708,63 @@ namespace ExtractorSharp {
         }
 
 
-        private void AddLayer(object sender, EventArgs e) {
+        private void AddLayer(object sender, EventArgs e)
+        {
             var array = Connector.CheckedImages;
             Connector.Do("addLayer", array);
         }
 
-        private void LayerVisibleChanged(object sender, LayerEventArgs e) {
+        private void LayerVisibleChanged(object sender, LayerEventArgs e)
+        {
             var index = e.ChangedIndex;
             var layer = Drawer.LayerList[index];
             var pos = layerList.Items.IndexOf(layer);
-            if (pos > -1) {
+            if (pos > -1)
+            {
                 layerList.SetItemChecked(pos, layer.Visible);
             }
         }
 
-        private void LayerFlush() {
-            if (move_mode > -1) {
+        private void LayerFlush()
+        {
+            if (move_mode > -1)
+            {
                 return;
             }
             var arr = Drawer.LayerList.ToArray();
             layerList.Items.Clear();
-            foreach (var t in arr) {
+            foreach (var t in arr)
+            {
                 layerList.Items.Add(t, t.Visible);
             }
             layerList.Refresh();
         }
 
-        private void CommandDid(object sender, CommandEventArgs e) {
-            if (e.Command is IFileFlushable) {//先刷新文件列表。防止Connector.SelectFile未刷新
+        private void CommandDid(object sender, CommandEventArgs e)
+        {
+            if (e.Command is IFileFlushable)
+            {//先刷新文件列表。防止Connector.SelectFile未刷新
                 Connector.FileListFlush();
             }
-            if (e.Command is ICommandMessage) {
+            if (e.Command is ICommandMessage)
+            {
                 Connector.SendSuccess(e.Command.Name);
             }
-            if (e.Command.IsChanged) {
+            if (e.Command.IsChanged)
+            {
                 Connector.OnSaveChanged();
             }
         }
 
-        private void ScaleChange(object sender, EventArgs e) {
+        private void ScaleChange(object sender, EventArgs e)
+        {
             Config["CanvasScale"] = new ConfigValue(scaleBox.Value);
             Drawer.ImageScale = scaleBox.Value / 100;
             Flush(sender, e);
         }
 
-        private void RealPosition(object sender, EventArgs e) {
+        private void RealPosition(object sender, EventArgs e)
+        {
             Drawer.CurrentLayer.RealPosition = realPositionBox.Checked;
             Drawer.LastLayer.RealPosition = realPositionBox.Checked;
             Drawer.CompareLayers.ForEach(c => c.RealPosition = realPositionBox.Checked);
@@ -686,18 +772,24 @@ namespace ExtractorSharp {
         }
 
 
-        private void SelectThisLink(object sender, EventArgs e) {
+        private void SelectThisLink(object sender, EventArgs e)
+        {
             var cur = imageList.SelectedItem;
-            if (cur != null && cur.Type != ColorBits.LINK) {
+            if (cur != null && cur.Type != ColorBits.LINK)
+            {
                 imageList.Filter(sprite => sprite.Type == ColorBits.LINK && cur.Equals(sprite.Target));
             }
         }
 
-        private void SelectThisTarget(object sender, EventArgs e) {
+        private void SelectThisTarget(object sender, EventArgs e)
+        {
             var cur = imageList.SelectedItem;
-            if (cur != null && cur.Type == ColorBits.LINK) {
-                for (var i = 0; i < imageList.Items.Count; i++) {
-                    if (imageList.Items[i].Equals(cur.Target)) {
+            if (cur != null && cur.Type == ColorBits.LINK)
+            {
+                for (var i = 0; i < imageList.Items.Count; i++)
+                {
+                    if (imageList.Items[i].Equals(cur.Target))
+                    {
                         imageList.SelectedIndex = i;
                     }
                 }
@@ -709,7 +801,8 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PasteImg(object sender, EventArgs e) {
+        private void PasteImg(object sender, EventArgs e)
+        {
             var index = Connector.SelectedFileIndex;
             index = index < 0 ? Connector.FileCount : index;
             Connector.Do("pasteImg", index);
@@ -720,13 +813,15 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CutImg(object sender, EventArgs e) {
+        private void CutImg(object sender, EventArgs e)
+        {
             var mode = ClipMode.Copy;
             if (sender.Equals(cutFileItem)) mode = ClipMode.Cut;
             Connector.Do("cutImg", Connector.CheckedFiles, mode);
         }
 
-        private void CopyImage(object sender, EventArgs e) {
+        private void CopyImage(object sender, EventArgs e)
+        {
             CutImage(ClipMode.Copy);
         }
 
@@ -736,22 +831,27 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CutImage(object sender, EventArgs e) {
+        private void CutImage(object sender, EventArgs e)
+        {
             CutImage(ClipMode.Cut);
         }
 
 
-        private void CutImage(ClipMode mode) {
+        private void CutImage(ClipMode mode)
+        {
             var al = Connector.SelectedFile;
-            if (al != null) {
+            if (al != null)
+            {
                 var indexes = Connector.CheckedImageIndices;
                 Connector.Do("cutImage", al, indexes, mode);
             }
         }
 
-        private void CanvasPasteImage(object sender, EventArgs e) {
+        private void CanvasPasteImage(object sender, EventArgs e)
+        {
             var al = Connector.SelectedFile;
-            if (al != null) {
+            if (al != null)
+            {
                 var image = Connector.SelectedImage;
                 Connector.Do("pasteSingleImage", image, Hotpot);
                 Drawer.CurrentLayer.RealLocation = Hotpot;
@@ -764,9 +864,11 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PasteImage(object sender, EventArgs e) {
+        private void PasteImage(object sender, EventArgs e)
+        {
             var al = Connector.SelectedFile;
-            if (al != null) {
+            if (al != null)
+            {
                 var index = Connector.SelectedImageIndex;
                 index = index < 0 ? Connector.ImageCount : index;
                 Connector.Do("pasteImage", al, index);
@@ -778,7 +880,8 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void LinearDodge(object sender, EventArgs e) {
+        private void LinearDodge(object sender, EventArgs e)
+        {
             Config["LinearDodge"] = new ConfigValue(linearDodgeBox.Checked);
             Flush(sender, e);
         }
@@ -788,7 +891,8 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ColorChanged(object sender, ColorEventArgs e) {
+        private void ColorChanged(object sender, ColorEventArgs e)
+        {
             colorPanel.BackColor = e.NewColor;
             if (dyeBox.Checked) Flush(sender, e);
         }
@@ -798,50 +902,61 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ColorChanged(object sender, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Right) {
+        private void ColorChanged(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
                 Drawer.Color = Color.Empty;
                 return;
             }
 
-            if (colorDialog.ShowDialog() == DialogResult.OK) {
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
                 Drawer.Color = colorDialog.Color;
             }
         }
 
-        private void ImageChanged(object sender, EventArgs e) {
-            Drawer.OnPalatteChanged(new FileEventArgs {
+        private void ImageChanged(object sender, EventArgs e)
+        {
+            Drawer.OnPalatteChanged(new FileEventArgs
+            {
                 Entity = Connector.SelectedImage,
                 Album = Connector.SelectedFile
             });
             ImageFlush();
         }
 
-        private void PreviewChanged(object sender, EventArgs e) {
+        private void PreviewChanged(object sender, EventArgs e)
+        {
             Config["Preview"] = new ConfigValue(previewItem.Checked);
             previewPanel.Visible = previewItem.Checked;
         }
 
-        private void PreviewHover(object sender, ItemHoverEventArgs e) {
+        private void PreviewHover(object sender, ItemHoverEventArgs e)
+        {
             var entity = e.Item as Sprite;
-            if (previewItem.Checked && entity != null) {
+            if (previewItem.Checked && entity != null)
+            {
                 previewPanel.BackgroundImage = entity.Picture;
                 previewPanel.Visible = true;
             }
         }
 
 
-        private void AdjustPosition(object sender, EventArgs e) {
+        private void AdjustPosition(object sender, EventArgs e)
+        {
             var index = Connector.SelectedImageIndex;
             var item = Connector.SelectedFile;
-            if (index > -1 && item != null) {
+            if (index > -1 && item != null)
+            {
                 var location = Drawer.CurrentLayer.Rectangle.Location;
-                if (realPositionBox.Checked) {
+                if (realPositionBox.Checked)
+                {
                     location = location.Minus(item[index].Location);
                 }
                 Drawer.CurrentLayer.Location = Point.Empty;
-                Connector.Do("changePosition", item, new[] {index}, new[] {location.X, location.Y, 0, 0},
-                    new[] {true, true, false, false, realPositionBox.Checked});
+                Connector.Do("changePosition", item, new[] { index }, new[] { location.X, location.Y, 0, 0 },
+                    new[] { true, true, false, false, realPositionBox.Checked });
             }
         }
 
@@ -851,7 +966,8 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HideLayer(object sender, EventArgs e) {
+        private void HideLayer(object sender, EventArgs e)
+        {
             var index = layerList.SelectedIndex;
             var item = layerList.SelectedItem;
             if (index < 0 || item == null) return;
@@ -863,8 +979,10 @@ namespace ExtractorSharp {
         /// <summary>
         ///     移动文件序列
         /// </summary>
-        private void MoveFileIndex(object sender, ItemEventArgs e) {
-            if (e.Index > -1 && Connector.FileCount > 0) {
+        private void MoveFileIndex(object sender, ItemEventArgs e)
+        {
+            if (e.Index > -1 && Connector.FileCount > 0)
+            {
                 Connector.Do("moveFile", e.Index, e.Target);
                 Connector.SelectedFileIndex = e.Target;
             }
@@ -874,25 +992,31 @@ namespace ExtractorSharp {
         /// <summary>
         ///     移动贴图序列
         /// </summary>
-        private void MoveImageIndex(object sender, ItemEventArgs e) {
+        private void MoveImageIndex(object sender, ItemEventArgs e)
+        {
             var al = Connector.SelectedFile;
-            if (al != null && e.Index > -1 && Connector.ImageCount > 0) {
+            if (al != null && e.Index > -1 && Connector.ImageCount > 0)
+            {
                 Connector.Do("moveImage", al, e.Index, e.Target);
                 Connector.SelectedImageIndex = e.Target;
             }
         }
 
 
-        protected override void OnFormClosing(FormClosingEventArgs e) {
-            if (!Connector.IsSave) {
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (!Connector.IsSave)
+            {
                 var rs = MessageBox.Show(Language["SaveTips"], Language["Tips"], MessageBoxButtons.YesNoCancel,
                     MessageBoxIcon.Question);
-                if (rs == DialogResult.Cancel) {
+                if (rs == DialogResult.Cancel)
+                {
                     e.Cancel = true;
                     return;
                 }
 
-                if (rs == DialogResult.Yes) {
+                if (rs == DialogResult.Yes)
+                {
                     Connector.Save();
                     e.Cancel = !Connector.IsSave;
                 }
@@ -905,7 +1029,8 @@ namespace ExtractorSharp {
             base.OnFormClosing(e);
         }
 
-        private void SaveConfig() {
+        private void SaveConfig()
+        {
             Config["CanvasScale"] = new ConfigValue(scaleBox.Value);
             Config["Pixelate"] = new ConfigValue(pixelateBox.Checked);
             Config["Brush"] = new ConfigValue(Drawer.Brush.Name);
@@ -924,24 +1049,28 @@ namespace ExtractorSharp {
         }
 
 
-        private void SelectSavePath(object sender, EventArgs e) {
+        private void SelectSavePath(object sender, EventArgs e)
+        {
             var con = Connector as MainConnector;
             con.SelectSavePath();
             pathBox.Text = con.SavePath;
         }
 
 
-        private void AjustRule(object sender, EventArgs e) {
+        private void AjustRule(object sender, EventArgs e)
+        {
             Ruler.Location = Drawer.CurrentLayer.Location;
             Flush(sender, e);
         }
 
-        private void SelectImageChanged(object sender, EventArgs e) {
+        private void SelectImageChanged(object sender, EventArgs e)
+        {
             var lastPosition = Drawer.CurrentLayer.Location;
             var lastLayerVisible = Drawer.LastLayer.Visible;
             Drawer.CurrentLayer = new Canvas();
             Drawer.LastLayerVisible = lastLayerVisible;
-            if (Connector.SelectedImage != null) {
+            if (Connector.SelectedImage != null)
+            {
                 Drawer.CurrentLayer.Size = Connector.SelectedImage.Size;
             }
             Drawer.CurrentLayer.Location = lastPosition;
@@ -950,11 +1079,13 @@ namespace ExtractorSharp {
             Drawer.OnLayerChanged(new LayerEventArgs());
         }
 
-        private void Sort(object sender, EventArgs e) {
+        private void Sort(object sender, EventArgs e)
+        {
             Connector.Do("sortImg");
         }
 
-        private void Classify(object sender, EventArgs e) {
+        private void Classify(object sender, EventArgs e)
+        {
             ListFlush();
         }
 
@@ -962,18 +1093,22 @@ namespace ExtractorSharp {
         /// <summary>
         ///     列表刷新
         /// </summary>
-        public void ListFlush() {
+        public void ListFlush()
+        {
             var items = albumList.CheckedItems;
             var itemArray = new Album[items.Count];
             items.CopyTo(itemArray, 0);
             albumList.Items.Clear();
             var condition = searchBox.Text.Trim().Split(" ");
             var array = NpkCoder.Find(Connector.List, condition);
-            if (classifyItem.Checked) {
+            if (classifyItem.Checked)
+            {
                 var path = "";
-                foreach (var al in array) {
+                foreach (var al in array)
+                {
                     var p = al.Path.Replace(al.Name, "");
-                    if (p != path) {
+                    if (p != path)
+                    {
                         path = p;
                         var sp = new Album();
                         sp.Path = $"---------------{Config["ClassifySeparator"]}---------------";
@@ -981,45 +1116,55 @@ namespace ExtractorSharp {
                     }
                     albumList.Items.Add(al);
                 }
-            } else {
+            }
+            else
+            {
                 albumList.Items.AddRange(array.ToArray());
             }
 
-            for (var i = 0; i < array.Count; i++) {
-                if (itemArray.Contains(array[i])) {
+            for (var i = 0; i < array.Count; i++)
+            {
+                if (itemArray.Contains(array[i]))
+                {
                     albumList.SetItemChecked(i, true);
                 }
             }
 
             var item = albumList.SelectedItem;
-            if (item != null && albumList.Items.Contains(item)) {
+            if (item != null && albumList.Items.Contains(item))
+            {
                 albumList.SelectedItem = item;
             }
-            if (albumList.SelectedIndex == -1 && albumList.Items.Count > 0) {
+            if (albumList.SelectedIndex == -1 && albumList.Items.Count > 0)
+            {
                 albumList.SelectedIndex = 0;
             }
         }
 
 
-        private void AddOutMerge(object sender, EventArgs e) {
+        private void AddOutMerge(object sender, EventArgs e)
+        {
             var dialog = new OpenFileDialog();
             dialog.Multiselect = true;
             dialog.Filter = $"{Language["ImageResources"]}| {Extensions}";
-            if (dialog.ShowDialog() == DialogResult.OK) {
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
                 var array = Connector.LoadFile(dialog.FileNames).ToArray();
                 Connector.Do("addMerge", array);
             }
         }
 
 
-        private void ShowHistory(object sender, EventArgs e) {
+        private void ShowHistory(object sender, EventArgs e)
+        {
             dropPanel.BringToFront();
             dropPanel.Visible = !dropPanel.Visible;
             dropPanel.Refresh();
         }
 
 
-        private void CloseFile(object sender, EventArgs e) {
+        private void CloseFile(object sender, EventArgs e)
+        {
             albumList.Items.Clear();
             imageList.Items.Clear();
             Controller.Dispose();
@@ -1034,8 +1179,10 @@ namespace ExtractorSharp {
             pathBox.Text = string.Empty;
         }
 
-        private void OnMouseWheel(object sender, MouseEventArgs e) {
-            if (ModifierKeys == Keys.Alt) {
+        private void OnMouseWheel(object sender, MouseEventArgs e)
+        {
+            if (ModifierKeys == Keys.Alt)
+            {
                 var i = scaleBox.Value + e.Delta / 12;
                 i = i < scaleBox.Maximum ? i : scaleBox.Maximum;
                 i = i > scaleBox.Minimum ? i : scaleBox.Minimum;
@@ -1043,37 +1190,50 @@ namespace ExtractorSharp {
             }
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
             if (keyData.HasFlag(Keys.Alt)) box.Focus();
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void DragEnterInput(object sender, DragEventArgs e) {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+        private void DragEnterInput(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
                 e.Effect = DragDropEffects.All;
-            } else {
+            }
+            else
+            {
                 e.Effect = DragDropEffects.None;
             }
         }
 
-        private void DragDropInput(object sender, DragEventArgs e) {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+        private void DragDropInput(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
                 var args = e.Data.GetData(DataFormats.FileDrop, false) as string[];
                 Connector.AddFile(false, args);
-            } else if (e.Data.GetDataPresent(DataFormats.Serializable)) {
+            }
+            else if (e.Data.GetDataPresent(DataFormats.Serializable))
+            {
                 (sender as Control)?.DoDragDrop(e.Data, e.Effect);
             }
         }
 
 
-        private void ShowConvert(object sender, EventArgs e) {
+        private void ShowConvert(object sender, EventArgs e)
+        {
             var array = Connector.CheckedFiles;
             if (array.Length > 0 && CheckOgg(array)) Viewer.Show("convert", array);
         }
 
-        private bool CheckOgg(params Album[] args) {
-            foreach (var al in args) {
-                if (al.Version == ImgVersion.Other) {
+        private bool CheckOgg(params Album[] args)
+        {
+            foreach (var al in args)
+            {
+                if (al.Version == ImgVersion.Other)
+                {
                     Connector.SendWarning("NotHandleFile");
                     return false;
                 }
@@ -1088,8 +1248,10 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Display(object sender, EventArgs e) {
-            if (displayBox.Checked) {
+        private void Display(object sender, EventArgs e)
+        {
+            if (displayBox.Checked)
+            {
                 var thread = new Thread(Display);
                 thread.IsBackground = true;
                 thread.Name = "display";
@@ -1097,16 +1259,20 @@ namespace ExtractorSharp {
             }
         }
 
-        private void Display() {
-            while (displayBox.Checked) {
+        private void Display()
+        {
+            while (displayBox.Checked)
+            {
                 DisplayNext();
                 Thread.Sleep(1000 / Config["FlashSpeed"].Integer);
             }
         }
 
 
-        private void DisplayNext() {
-            if (imageList.InvokeRequired) {
+        private void DisplayNext()
+        {
+            if (imageList.InvokeRequired)
+            {
                 imageList.Invoke(new MethodInvoker(DisplayNext));
                 return;
             }
@@ -1122,11 +1288,13 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HideImg(object sender, EventArgs e) {
+        private void HideImg(object sender, EventArgs e)
+        {
             var list = Connector.CheckedFiles;
             if (list.Length > 0 && CheckOgg(list) &&
                 MessageBox.Show(Language["HideTips"], "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) ==
-                DialogResult.OK) {
+                DialogResult.OK)
+            {
                 Connector.Do("hideImg", list);
             }
         }
@@ -1137,16 +1305,22 @@ namespace ExtractorSharp {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// F
-        private void ShowNewImgDialog(object sender, EventArgs e) {
-            Viewer.Show("newImg", Connector.List.Count,Connector.SelectedFileIndex);
+        private void ShowNewImgDialog(object sender, EventArgs e)
+        {
+            Viewer.Show("newImg", Connector.List.Count, Connector.SelectedFileIndex);
         }
 
-        private void ExchangeFile(object sender, EventArgs e) {
-            if (ExchangeSelectedFile == null) {
+        private void ExchangeFile(object sender, EventArgs e)
+        {
+            if (ExchangeSelectedFile == null)
+            {
                 ExchangeSelectedFile = Connector.SelectedFile;
-            } else {
+            }
+            else
+            {
                 var target = Connector.SelectedFile;
-                if (target == null || ExchangeSelectedFile.Equals(target)) {
+                if (target == null || ExchangeSelectedFile.Equals(target))
+                {
                     return;
                 }
                 Connector.Do("exchangeFile", ExchangeSelectedFile, target);
@@ -1159,24 +1333,33 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ReplaceFile(object sender, EventArgs e) {
+        private void ReplaceFile(object sender, EventArgs e)
+        {
             var item = Connector.SelectedFile;
-            if (item != null) {
+            if (item != null)
+            {
                 var dialog = new OpenFileDialog();
                 dialog.Filter =
                     $"{Language["ImageResources"]}|*.img;*.gif|{Language["SoundResources"]}|*.ogg;|{Language["AllFormat"]}|*.*";
-                if (item.Version == ImgVersion.Other || item.Name.EndsWith(".ogg")) {
+                if (item.Version == ImgVersion.Other || item.Name.EndsWith(".ogg"))
+                {
                     dialog.FilterIndex = 2;
-                } else if (item.Name.EndsWith(".img")) {
+                }
+                else if (item.Name.EndsWith(".img"))
+                {
                     dialog.FilterIndex = 1;
-                } else {
+                }
+                else
+                {
                     dialog.FilterIndex = 3;
                 }
-                if (dialog.ShowDialog() == DialogResult.OK) {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
                     var filename = dialog.FileName;
                     var list = Connector.LoadFile(filename);
                     var file = list.Count > 0 ? list[0] : null;
-                    if (file != null) {
+                    if (file != null)
+                    {
                         Connector.Do("replaceImg", item, file);
                     }
                 }
@@ -1188,21 +1371,37 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SaveAsImg(object sender, EventArgs e) {
+        private void SaveAsImg(object sender, EventArgs e)
+        {
             var array = Connector.CheckedFiles;
-            if (array.Length == 1) {
+            if (array.Length == 1)
+            {
                 var dialog = new SaveFileDialog();
                 dialog.DefaultExt = $".{array[0].Name.LastSubstring('.')}";
                 dialog.FileName = array[0].Name;
                 dialog.Filter = "IMG|*.img|GIF|*.gif|OGG|*.ogg";
-                if (dialog.ShowDialog() == DialogResult.OK) {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
                     Connector.Do("saveImg", array, dialog.FileName, 1);
                 }
-            } else if (array.Length > 1) {
+            }
+            else if (array.Length > 1)
+            {
                 var dialog = new FolderBrowserDialog();
-                if (dialog.ShowDialog() == DialogResult.OK) {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
                     Connector.Do("saveImg", array, dialog.SelectedPath);
                 }
+            }
+        }
+
+        private void SaveAsAlbum(object sender, EventArgs e)
+        {
+            var path = string.IsNullOrEmpty(Config["SaveImagePath"].Value) ? "../output" : Config["SaveImagePath"].Value;
+            var array = Connector.CheckedFiles;
+            if (array.Length >= 1)
+            {
+                Controller.Do("saveAllImage", array, path, string.Empty, -1, 0, true, Connector.Effect);
             }
         }
 
@@ -1211,11 +1410,13 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeleteImg(object sender, EventArgs e) {
+        private void DeleteImg(object sender, EventArgs e)
+        {
             var indices = Connector.CheckedFileIndices;
             if (indices.Length > 0 && MessageBox.Show(Language["DeleteTips"], Language["Tips"],
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) ==
-                DialogResult.OK) {
+                DialogResult.OK)
+            {
                 Connector.Do("deleteImg", indices);
             }
         }
@@ -1225,7 +1426,8 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CheckAllImg(object sender, EventArgs e) {
+        private void CheckAllImg(object sender, EventArgs e)
+        {
             albumList.CheckAll();
         }
 
@@ -1234,7 +1436,8 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ReverseCheckImg(object sender, EventArgs e) {
+        private void ReverseCheckImg(object sender, EventArgs e)
+        {
             albumList.ReverseCheck();
         }
 
@@ -1243,7 +1446,8 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CheckAllImage(object sender, EventArgs e) {
+        private void CheckAllImage(object sender, EventArgs e)
+        {
             imageList.CheckAll();
         }
 
@@ -1252,7 +1456,8 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ReverseCheckImage(object sender, EventArgs e) {
+        private void ReverseCheckImage(object sender, EventArgs e)
+        {
             imageList.ReverseCheck();
         }
 
@@ -1262,14 +1467,18 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void RenameImg(object sender, EventArgs e) {
+        private void RenameImg(object sender, EventArgs e)
+        {
             var album = Connector.SelectedFile;
-            if (album != null) {
-                var dialog = new ESTextDialog(Connector) {
+            if (album != null)
+            {
+                var dialog = new ESTextDialog(Connector)
+                {
                     InputText = album.Path,
                     Text = Language["Rename"]
                 };
-                if (dialog.Show() == DialogResult.OK) {
+                if (dialog.Show() == DialogResult.OK)
+                {
                     Connector.Do("renameImg", album, dialog.InputText);
                 }
             }
@@ -1281,7 +1490,8 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Flush(object sender, EventArgs e) {
+        private void Flush(object sender, EventArgs e)
+        {
             CanvasFlush();
         }
 
@@ -1289,8 +1499,10 @@ namespace ExtractorSharp {
         /// <summary>
         ///     贴图列表刷新
         /// </summary>
-        public void ImageFlush() {
-            if (move_mode > -1) {
+        public void ImageFlush()
+        {
+            if (move_mode > -1)
+            {
                 return;
             }
             var al = albumList.SelectedItem; //记录当前所选img
@@ -1298,17 +1510,23 @@ namespace ExtractorSharp {
             var items = imageList.CheckedItems;
             var itemArray = new Sprite[items.Count];
             items.CopyTo(itemArray, 0);
-            if (al != null && al.Version == ImgVersion.Other) {
+            if (al != null && al.Version == ImgVersion.Other)
+            {
                 //判断是否为ogg音频
                 player.Play(al);
-            } else {
+            }
+            else
+            {
                 player.Visible = false;
                 imageList.Items.Clear();
                 var array = al?.List.ToArray();
-                if (array != null) {
+                if (array != null)
+                {
                     imageList.Items.AddRange(array);
-                    for (var i = 0; i < array.Length; i++) {
-                        if (itemArray.Contains(array[i])) {
+                    for (var i = 0; i < array.Length; i++)
+                    {
+                        if (itemArray.Contains(array[i]))
+                        {
                             imageList.SetItemChecked(i, true);
                         }
                     }
@@ -1316,9 +1534,12 @@ namespace ExtractorSharp {
 
                 //添加贴图
                 index = index > -1 && index < imageList.Items.Count ? index : 0;
-                if (imageList.Items.Count > 0) {
+                if (imageList.Items.Count > 0)
+                {
                     imageList.SelectedIndex = index;
-                } else if (imageList.Items.Count == 0) {
+                }
+                else if (imageList.Items.Count == 0)
+                {
                     CanvasFlush();
                 }
             }
@@ -1330,12 +1551,14 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AddFile(object sender, EventArgs e) {
+        private void AddFile(object sender, EventArgs e)
+        {
             var dialog = new OpenFileDialog();
             dialog.Filter =
                 $"{Language["SupportFormats"]}|{Extensions}";
             dialog.Multiselect = true;
-            if (dialog.ShowDialog() == DialogResult.OK) {
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
                 Connector.AddFile(!sender.Equals(addFileItem), dialog.FileNames);
             }
         }
@@ -1345,9 +1568,11 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OpenDirectory(object sender, EventArgs e) {
+        private void OpenDirectory(object sender, EventArgs e)
+        {
             var dialog = new FolderBrowserDialog();
-            if (dialog.ShowDialog() == DialogResult.OK) {
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
                 Connector.AddFile(sender.Equals(openFileItem), dialog.SelectedPath);
             }
         }
@@ -1357,11 +1582,13 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SaveAsFile(object sender, EventArgs e) {
+        private void SaveAsFile(object sender, EventArgs e)
+        {
             var dialog = new SaveFileDialog();
             dialog.Filter = "NPK|*.NPK";
             dialog.FileName = Path.GetSuffix();
-            if (dialog.ShowDialog() == DialogResult.OK) {
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
                 Connector.Save(dialog.FileName);
             }
         }
@@ -1370,30 +1597,36 @@ namespace ExtractorSharp {
         ///     存为文件夹(img)
         /// </summary>
         /// <param name="sender"></param>
-        private void OutputDirectory(object sender, EventArgs e) {
+        private void OutputDirectory(object sender, EventArgs e)
+        {
             var dialog = new FolderBrowserDialog();
-            if (dialog.ShowDialog() == DialogResult.OK) {
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
                 Connector.Do("saveImg", Connector.FileArray, dialog.SelectedPath);
             }
         }
 
-        private void AddMerge(object sender, EventArgs e) {
+        private void AddMerge(object sender, EventArgs e)
+        {
             var array = Connector.CheckedFiles;
             if (array.Length > 0 && CheckOgg(array)) Connector.Do("addMerge", array);
         }
 
-        private void DisplayMerge(object sender, EventArgs e) {
+        private void DisplayMerge(object sender, EventArgs e)
+        {
             Viewer.Show("merge", Connector.SelectedFile);
         }
 
-        public void CanvasFlush() {
+        public void CanvasFlush()
+        {
             box.Invalidate();
         }
 
         /// <summary>
         ///     画布刷新
         /// </summary>
-        private void OnPainting(object sender, PaintEventArgs e) {
+        private void OnPainting(object sender, PaintEventArgs e)
+        {
             var g = e.Graphics;
             g.InterpolationMode = pixelateBox.Checked ? InterpolationMode.NearestNeighbor : InterpolationMode.High;
             Drawer.DrawLayer(g);
@@ -1405,21 +1638,28 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnMouseDown(object sender, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Left) {
+        private void OnMouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
                 var point = e.Location;
                 move_mode = Drawer.IndexOfLayer(point);
                 Drawer.CusorLocation = point;
             }
         }
 
-        private void OnMouseClick(object sender, MouseEventArgs e) {
+        private void OnMouseClick(object sender, MouseEventArgs e)
+        {
             Hotpot = e.Location;
-            if (e.Button == MouseButtons.Left) {
-                if (!Drawer.IsSelect("MoveTool")) {
+            if (e.Button == MouseButtons.Left)
+            {
+                if (!Drawer.IsSelect("MoveTool"))
+                {
                     Drawer.Brush.Draw(Drawer.CurrentLayer, Hotpot, Drawer.ImageScale);
                 }
-            } else if (e.Button == MouseButtons.Right) {
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
                 canvasMoveHereItem.Text = $"{Language["MoveHere"]}{Hotpot.GetString()}";
                 canvasMenu.Show(box, Hotpot);
             }
@@ -1431,8 +1671,10 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnMouseUp(object sender, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Left) {
+        private void OnMouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
                 move_mode = -1;
                 ImageFlush();
                 LayerFlush();
@@ -1445,8 +1687,10 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnMouseMove(object sender, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Left && move_mode != -1) {
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && move_mode != -1)
+            {
                 Drawer.Move(move_mode, e.Location);
                 CanvasFlush();
             }
@@ -1458,23 +1702,27 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SaveImage(object sender, EventArgs e) {
+        private void SaveImage(object sender, EventArgs e)
+        {
             var album = Connector.SelectedFile;
-            if (album == null || album.List.Count < 1) {
+            if (album == null || album.List.Count < 1)
+            {
                 return;
             }
-            Viewer.Show("saveImage", new {allImage = false});
+            Viewer.Show("saveImage", new { allImage = false });
         }
 
-        private void SaveSingleImage(object sender, EventArgs e) {
+        private void SaveSingleImage(object sender, EventArgs e)
+        {
             var album = Connector.SelectedFile;
             var index = Connector.SelectedImageIndex;
             if (album == null || index < 0) return;
             var dialog = new SaveFileDialog();
             dialog.FileName = album.Name.RemoveSuffix();
             dialog.Filter = "png|*.png|bmp|*.bmp|jpg|*.jpg";
-            if (dialog.ShowDialog() == DialogResult.OK) {
-                Connector.Do("saveImage", album, 0, new[] {index}, dialog.FileName);
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                Connector.Do("saveImage", album, 0, new[] { index }, dialog.FileName);
             }
         }
 
@@ -1484,14 +1732,16 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SaveGif(object sender, EventArgs e) {
+        private void SaveGif(object sender, EventArgs e)
+        {
             var array = Connector.CheckedImageIndices;
             if (array.Length < 1) return;
             var dialog = new SaveFileDialog();
             var name = Connector.SelectedFile.Name.RemoveSuffix(".");
             dialog.Filter = "GIF|*.gif";
             dialog.FileName = name;
-            if (dialog.ShowDialog() == DialogResult.OK) {
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
                 Connector.Do("saveGif", Connector.SelectedFile, array, dialog.FileName, Config["GifTransparent"].Color,
                     Config["GifDelay"].Integer);
             }
@@ -1503,9 +1753,11 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ReplaceImage(object sender, EventArgs e) {
+        private void ReplaceImage(object sender, EventArgs e)
+        {
             var array = Connector.CheckedImages;
-            if (array.Length > 0) {
+            if (array.Length > 0)
+            {
                 Viewer.Show("replace");
             }
             CanvasFlush();
@@ -1517,15 +1769,18 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void LinkImage(object sender, EventArgs e) {
+        private void LinkImage(object sender, EventArgs e)
+        {
             var indexes = Connector.CheckedImageIndices;
             if (indexes.Length < 1) return;
             var dialog = new ESTextDialog();
             dialog.CanEmpty = true;
             dialog.Text = Language["LinkImage"];
-            if (dialog.Show() == DialogResult.OK) {
+            if (dialog.Show() == DialogResult.OK)
+            {
                 var str = dialog.InputText;
-                if (Regex.IsMatch(str, "^\\d")) {
+                if (Regex.IsMatch(str, "^\\d"))
+                {
                     Connector.Do("linkImage", Connector.SelectedFile, int.Parse(str), indexes);
                 }
                 CanvasFlush();
@@ -1537,12 +1792,14 @@ namespace ExtractorSharp {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeleteImage(object sender, EventArgs e) {
+        private void DeleteImage(object sender, EventArgs e)
+        {
             var indexes = Connector.CheckedImageIndices;
             var album = Connector.SelectedFile;
             if (album != null && indexes.Length > 0 && MessageBox.Show(Language["DeleteTips"], Language["Tips"],
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) ==
-                DialogResult.OK) {
+                DialogResult.OK)
+            {
                 Connector.Do("deleteImage", album, indexes);
             }
         }
