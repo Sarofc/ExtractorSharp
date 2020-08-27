@@ -36,7 +36,7 @@ namespace ExtractorSharp {
     ///     程序全局控制
     /// </summary>
     public static class Program {
-        internal static readonly string Version = Assembly.GetAssembly(typeof(Program)).GetName().Version.ToString();
+        internal static readonly string Version = Assembly.GetAssembly(typeof(Program)).GetName().Version.ToString() + "-special";
 
         private static string[] Arguments;
 

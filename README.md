@@ -9,6 +9,12 @@ ExtractorSharp
 更新
 ---
 
+   + 添加批量导出功能。左侧边栏，右键，选择 `保存所有Album`，即可导出勾选的img图片~
+   + .net 升级到 4.7.1
+
+   + [下载 1.7.3.2-special ](https://github.com/Sarofc/ExtractorSharp/releases/tag/1.7.3.2-special)
+
+---
    + 导出图片时，同时以json格式导出图片坐标数据，提供给其他游戏引擎使用。
    + 升级到了vs2019，重新build了download插件，以适应新版本程序。
 
