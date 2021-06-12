@@ -295,6 +295,7 @@ namespace ExtractorSharp
             addOutsideMergeItem.Click += AddOutMerge;
             runMergeItem.Click += DisplayMerge;
             saveAllImgesItem.Click += SaveAsAlbum;
+            saveAllAudio.Click += SaveAsAudio;
             albumList.SelectedIndexChanged += ImageChanged;
             albumList.ItemDeleted += DeleteImg;
             albumList.ItemDraged += MoveFileIndex;
@@ -1404,6 +1405,18 @@ namespace ExtractorSharp
                 Controller.Do("saveAllImage", array, path, string.Empty, -1, 0, true, Connector.Effect);
             }
         }
+
+
+        private void SaveAsAudio(object sender, EventArgs e)
+        {
+            var path = string.IsNullOrEmpty(Config["SaveImagePath"].Value) ? "../output" : Config["SaveImagePath"].Value;
+            var array = Connector.CheckedFiles;
+            if (array.Length >= 1)
+            {
+                Controller.Do("saveAllAudio", array, path, string.Empty, -1, 0, true);
+            }
+        }
+
 
         /// <summary>
         ///     删除img

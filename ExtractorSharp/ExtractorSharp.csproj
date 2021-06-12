@@ -129,6 +129,7 @@
     <Compile Include="Command\FileCommand\SaveFile.cs" />
     <Compile Include="Command\ImageCommand\DyeImage.cs" />
     <Compile Include="Command\ImageCommand\PasteSingleImage.cs" />
+    <Compile Include="Command\AudioCommand\SaveAllAudio.cs" />
     <Compile Include="Command\ImageCommand\SaveGif.cs" />
     <Compile Include="Command\ImageCommand\SaveAllImage.cs" />
     <Compile Include="Command\LayerCommand\AddCompareLayer.cs" />

@@ -31,11 +31,13 @@ using ExtractorSharp.Properties;
 using ExtractorSharp.View.Dialog;
 using Microsoft.Win32;
 
-namespace ExtractorSharp {
+namespace ExtractorSharp
+{
     /// <summary>
     ///     程序全局控制
     /// </summary>
-    public static class Program {
+    public static class Program
+    {
         internal static readonly string Version = Assembly.GetAssembly(typeof(Program)).GetName().Version.ToString() + "-special";
 
         private static string[] Arguments;
@@ -56,7 +58,8 @@ namespace ExtractorSharp {
         ///     应用程序的主入口点。
         /// </summary>
         [STAThread]
-        private static void Main(string[] args) {
+        private static void Main(string[] args)
+        {
             Arguments = args;
             LoadConfig();
             LoadLanguage();
@@ -65,7 +68,8 @@ namespace ExtractorSharp {
             AppDomain.CurrentDomain.UnhandledException += CatchException;
             Application.SetCompatibleTextRenderingDefault(true);
             Application.EnableVisualStyles();
-            if (Config["AutoCheckUpdate"].Boolean) {
+            if (Config["AutoCheckUpdate"].Boolean)
+            {
                 CheckUpdate(false);
             }
             LoadRegistry();
@@ -86,11 +90,13 @@ namespace ExtractorSharp {
             Application.Run(Form);
         }
 
-        private static void CatchException(object sender, UnhandledExceptionEventArgs e) {
+        private static void CatchException(object sender, UnhandledExceptionEventArgs e)
+        {
             ShowDebug(sender, new ThreadExceptionEventArgs(e.ExceptionObject as Exception));
         }
 
-        private static void RegistyCommand() {
+        private static void RegistyCommand()
+        {
             Controller.Registry("addImg", typeof(AddFile));
             Controller.Registry("deleteImg", typeof(DeleteFile));
             Controller.Registry("renameImg", typeof(RenameFile));
@@ -132,6 +138,7 @@ namespace ExtractorSharp {
             Controller.Registry("runMerge", typeof(RunMerge));
             Controller.Registry("moveMerge", typeof(MoveMerge));
             Controller.Registry("saveAllImage", typeof(SaveAllImage));
+            Controller.Registry("saveAllAudio", typeof(SaveAllAudio));
 
             Controller.Registry("canvasImage", typeof(CanvasImage));
             Controller.Registry("uncanvasImage", typeof(UnCanvasImage));
@@ -148,29 +155,36 @@ namespace ExtractorSharp {
             Controller.Registry("pencil", typeof(PencilDraw));
             Controller.Registry("eraser", typeof(EraserDraw));
             Controller.Registry("moveTools", typeof(MoveToolsDraw));
-            Controller.Registry("Sort", new SortExecute {
+            Controller.Registry("Sort", new SortExecute
+            {
                 Sorter = Merger.Sorter
             });
-            Controller.Registry("SortIndexOf", new SortIndexOfExecute {
+            Controller.Registry("SortIndexOf", new SortIndexOfExecute
+            {
                 Sorter = Merger.Sorter
             });
         }
 
-        private static void ShowDebug(object sender, ThreadExceptionEventArgs e) {
-            if (Config["Profile"].Value.Equals("debug")) {
+        private static void ShowDebug(object sender, ThreadExceptionEventArgs e)
+        {
+            if (Config["Profile"].Value.Equals("debug"))
+            {
                 return;
             }
-            try {
+            try
+            {
                 var log = $"{e.Exception.Message};\r\n{e.Exception.StackTrace}";
                 var data = Encoding.UTF8.GetBytes(log);
                 log = Convert.ToBase64String(data);
                 var dir = $"{Config["RootPath"]}/log";
-                if (!Directory.Exists(dir)) {
+                if (!Directory.Exists(dir))
+                {
                     Directory.CreateDirectory(dir);
                 }
                 var current = $"{dir}/{DateTime.Now.ToString("yyyyMMddHHmmss")}.log";
                 File.WriteAllBytes(current, data);
-                switch (e.Exception) {
+                switch (e.Exception)
+                {
                     case IOException _:
                         Connector.SendError("FileHandleError");
                         break;
@@ -181,39 +195,48 @@ namespace ExtractorSharp {
                         Connector.SendError("FipsError");
                         break;
                     default:
-                        if (Config["Profile"].Value.Equals("release")) {
+                        if (Config["Profile"].Value.Equals("release"))
+                        {
                             Viewer.Show("debug", "debug", log);
                         }
                         break;
                 }
-            } catch (Exception) { }
+            }
+            catch (Exception) { }
         }
 
 
-        private static void OnShown(object sender, EventArgs e) {
+        private static void OnShown(object sender, EventArgs e)
+        {
             var last = SubVersion(Config["Version"].Value);
             var current = SubVersion(Version);
-            if (!last.Equals(current)) {
+            if (!last.Equals(current))
+            {
                 Config["Version"] = new ConfigValue(Version);
                 Config.Save();
-                if (Config["ShowFeature"].Boolean) {
+                if (Config["ShowFeature"].Boolean)
+                {
                     Process.Start($"{Config["WebHost"]}/es/feature/{Config["Version"]}.html");
                 }
             }
-            if (Arguments.Length == 1) {
+            if (Arguments.Length == 1)
+            {
                 var command = Arguments[0];
-                if (!command.StartsWith("esharp://")) {
+                if (!command.StartsWith("esharp://"))
+                {
                     Connector.AddFile(true, command);
                     return;
                 }
                 command = command.Replace("esharp://", "");
                 Arguments = command.Split("/");
             }
-            if (Arguments.Length > 1) {
+            if (Arguments.Length > 1)
+            {
                 var args = new object[Arguments.Length - 2];
                 Array.Copy(Arguments, 2, args, 0, args.Length);
                 var name = Arguments[1];
-                switch (Arguments[0]) {
+                switch (Arguments[0])
+                {
                     case "-s":
                         Viewer.Show(name, args);
                         break;
@@ -225,9 +248,11 @@ namespace ExtractorSharp {
         }
 
 
-        private static string SubVersion(string version) {
+        private static string SubVersion(string version)
+        {
             var index = version.LastIndexOf(".");
-            if (index > -1) {
+            if (index > -1)
+            {
                 version = version.Substring(0, index);
             }
             return version;
@@ -236,7 +261,8 @@ namespace ExtractorSharp {
         /// <summary>
         ///     注册窗口
         /// </summary>
-        private static void RegistyDialog() {
+        private static void RegistyDialog()
+        {
             Viewer.Regisity("replace", typeof(ReplaceImageDialog));
             Viewer.Regisity("merge", typeof(MergeDialog));
             Viewer.Regisity("newImg", typeof(NewImgDialog));
@@ -251,7 +277,8 @@ namespace ExtractorSharp {
         }
 
 
-        private static void ViewerDialogShown(object sender, DialogEventArgs e) {
+        private static void ViewerDialogShown(object sender, DialogEventArgs e)
+        {
             e.Dialog = Tools.CreateInstance(e.DialogType, Connector) as ESDialog;
             e.Dialog.Owner = Form;
         }
@@ -260,20 +287,23 @@ namespace ExtractorSharp {
         /// <summary>
         ///     加载语言
         /// </summary>
-        private static void LoadLanguage() {
+        private static void LoadLanguage()
+        {
             var chinese = Language.CreateFromJson(Resources.Chinese);
             Language.List = new List<Language>();
             Language.List.Add(chinese);
             var path = $"{Config["RootPath"]}\\lan\\";
             Language.CreateFromDir(path);
-            if (Config["LCID"].Integer == -1) {
+            if (Config["LCID"].Integer == -1)
+            {
                 Config["LCID"] = new ConfigValue(Application.CurrentCulture.LCID);
                 Config.Save();
             }
             Language.LocalLcid = Config["LCID"].Integer;
         }
 
-        private static void LoadConfig() {
+        private static void LoadConfig()
+        {
             Config = new JsonConfig();
             Config.LoadConfig(Resources.Config);
             Config.LoadConfig(Resources.View);
@@ -283,9 +313,12 @@ namespace ExtractorSharp {
         /// <summary>
         ///     加载注册表
         /// </summary>
-        private static void LoadRegistry() {
-            try {
-                if (string.Empty.Equals(Config["GamePath"].Value) || !Directory.Exists(Config["GamePath"].Value)) {
+        private static void LoadRegistry()
+        {
+            try
+            {
+                if (string.Empty.Equals(Config["GamePath"].Value) || !Directory.Exists(Config["GamePath"].Value))
+                {
                     var path = Registry.CurrentUser
                         .OpenSubKey("software\\tencent\\dnf", RegistryKeyPermissionCheck.Default,
                             RegistryRights.ReadKey).GetValue("InstallPath").ToString();
@@ -293,7 +326,9 @@ namespace ExtractorSharp {
                 }
                 Config["ResourcePath"] = new ConfigValue($"{Config["GamePath"]}\\ImagePacks2");
                 Config.Save();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Console.Write(e);
             }
         }
@@ -303,21 +338,27 @@ namespace ExtractorSharp {
         ///     判断程序是否需要更新
         /// </summary>
         /// <returns></returns>
-        public static void CheckUpdate(bool Tips) {
+        public static void CheckUpdate(bool Tips)
+        {
             var builder = new LSBuilder();
             var obj = builder.Get($"{Config["ApiHost"]}{Config["UpdateUrl"]}");
-            if (obj == null) {
+            if (obj == null)
+            {
                 return;
             }
             var info = obj["tag"].GetValue(typeof(VersionInfo)) as VersionInfo;
-            if (info != null && !info.Name.Equals(Version)) {
+            if (info != null && !info.Name.Equals(Version))
+            {
                 //若当前版本低于最新版本时，触发更新
                 if (MessageBox.Show(Language.Default["NeedUpdateTips"], Language.Default["Tips"],
-                        MessageBoxButtons.OKCancel) != DialogResult.OK) {
+                        MessageBoxButtons.OKCancel) != DialogResult.OK)
+                {
                     return; //提示更新
                 }
                 StartUpdate(); //启动更新
-            } else if (Tips) {
+            }
+            else if (Tips)
+            {
                 MessageBox.Show(Language.Default["NeedNotUpdateTips"]); //提示不需要更新
             }
             Config.Save();
@@ -330,14 +371,18 @@ namespace ExtractorSharp {
         /// <param name="updateUrl"></param>
         /// <param name="address"></param>
         /// <param name="productName"></param>
-        private static void StartUpdate() {
+        private static void StartUpdate()
+        {
             var name = $"{Config["RootPath"]}\\{Config["UpdateExeName"]}";
-            try {
+            try
+            {
                 var client = new WebClient();
                 client.DownloadFile(Config["UpdateExeUrl"].Value, name);
                 client.Dispose();
                 Process.Start(name);
-            } finally {
+            }
+            finally
+            {
                 Environment.Exit(-1);
             }
         }

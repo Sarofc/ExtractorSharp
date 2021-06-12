@@ -59,6 +59,7 @@ namespace ExtractorSharp {
             runMergeItem = new ToolStripMenuItem();
             renameItem = new ToolStripMenuItem();
             saveAllImgesItem = new ToolStripMenuItem();
+            saveAllAudio = new ToolStripMenuItem();
 
 
             repairFileItem = new ToolStripMenuItem();
@@ -239,6 +240,7 @@ namespace ExtractorSharp {
             albumListMenu.Items.Add(runMergeItem);
             albumListMenu.Items.AddSeparator();
             albumListMenu.Items.Add(saveAllImgesItem);
+            albumListMenu.Items.Add(saveAllAudio);
             albumListMenu.Size = new Size(221, 268);
 
             editFileItem.Text = Language["Edit"];
@@ -302,6 +304,9 @@ namespace ExtractorSharp {
 
             saveAllImgesItem.Text = "保存所有Album";
             saveAllImgesItem.Image = Resources.save;
+
+            saveAllAudio.Text = "保存所有Ogg";
+            saveAllAudio.Image = Resources.save;
 
             renameItem.Text = Language["Rename"];
             renameItem.ShortcutKeys = Keys.Control | Keys.R;
@@ -874,6 +879,7 @@ namespace ExtractorSharp {
         private ToolStripMenuItem addOutsideMergeItem;//加入外部文件到拼合队列
         private ToolStripMenuItem runMergeItem;    //执行拼合队列
         private ToolStripMenuItem saveAllImgesItem; //保存所有album中的图片
+        private ToolStripMenuItem saveAllAudio;//保存所有ogg
 
         private ToolStripMenuItem repairFileItem;    //修复文件
         private ToolStripMenuItem recoverFileItem;   //恢复文件

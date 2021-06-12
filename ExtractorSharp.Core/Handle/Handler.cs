@@ -8,21 +8,25 @@ using ExtractorSharp.Core.Lib;
 using ExtractorSharp.Core.Model;
 using ExtractorSharp.Json.Attr;
 
-namespace ExtractorSharp.Core.Handle {
+namespace ExtractorSharp.Core.Handle
+{
     /// <summary>
     ///     IMG操作类
     /// </summary>
-    public abstract class Handler {
+    public abstract class Handler
+    {
         private static readonly Dictionary<ImgVersion, Type> Dic = new Dictionary<ImgVersion, Type>();
 
-        static Handler() {
+        static Handler()
+        {
             Regisity();
         }
 
         [LSIgnore] public Album Album;
 
 
-        public Handler(Album album) {
+        public Handler(Album album)
+        {
             Album = album;
         }
 
@@ -30,7 +34,8 @@ namespace ExtractorSharp.Core.Handle {
 
         public ImgVersion Version { get; } = ImgVersion.Ver2;
 
-        public static Handler CreateHandler(ImgVersion version, Album album) {
+        public static Handler CreateHandler(ImgVersion version, Album album)
+        {
             var type = Dic[version];
             return type.CreateInstance(album) as Handler;
         }
@@ -66,17 +71,20 @@ namespace ExtractorSharp.Core.Handle {
         /// <summary>
         ///     校正数据
         /// </summary>
-        public void Adjust() {
-            foreach (var entity in Album.List) {
+        public void Adjust()
+        {
+            foreach (var entity in Album.List)
+            {
                 entity.Adjust();
             }
             Album.Count = Album.List.Count;
             var ms = new MemoryStream();
             var data = AdjustData();
-            if (Album.Version > ImgVersion.Ver1) {
+            if (Album.Version > ImgVersion.Ver1)
+            {
                 ms.WriteString(NpkCoder.IMG_FLAG);
                 ms.WriteLong(Album.IndexLength);
-                ms.WriteInt((int) Album.Version);
+                ms.WriteInt((int)Album.Version);
                 ms.WriteInt(Album.Count);
             }
             ms.Write(data);
@@ -90,14 +98,17 @@ namespace ExtractorSharp.Core.Handle {
         /// </summary>
         /// <param name="version"></param>
         /// <param name="type"></param>
-        public static void Regisity(ImgVersion version, Type type) {
-            if (Dic.ContainsKey(version)) {
+        public static void Regisity(ImgVersion version, Type type)
+        {
+            if (Dic.ContainsKey(version))
+            {
                 Dic.Remove(version);
             }
             Dic.Add(version, type);
         }
 
-        public static void Regisity() {
+        public static void Regisity()
+        {
             Regisity(ImgVersion.Other, typeof(OtherHandler));
             Regisity(ImgVersion.Ver1, typeof(FirstHandler));
             Regisity(ImgVersion.Ver2, typeof(SecondHandler));
@@ -109,7 +120,8 @@ namespace ExtractorSharp.Core.Handle {
 
         public virtual void ConvertToVersion(ImgVersion version) { }
 
-        public virtual byte[] AdjustData() {
+        public virtual byte[] AdjustData()
+        {
             return new byte[0];
         }
     }

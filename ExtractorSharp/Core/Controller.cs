@@ -6,12 +6,14 @@ using ExtractorSharp.Core.Model;
 using ExtractorSharp.EventArguments;
 using ExtractorSharp.Exceptions;
 
-namespace ExtractorSharp.Core {
+namespace ExtractorSharp.Core
+{
     /// <summary>
     ///     命令控制器
     ///     <see cref="ICommand" />
     /// </summary>
-    public class Controller : IDisposable {
+    public class Controller : IDisposable
+    {
         public delegate void ActionHandler(object o, ActionEventArgs e);
 
         public delegate void CommandHandler(object sender, CommandEventArgs e);
@@ -28,7 +30,8 @@ namespace ExtractorSharp.Core {
         private readonly Dictionary<string, IExecutable> ExecuteMap;
 
 
-        public Controller() {
+        public Controller()
+        {
             actArgs = new ActionEventArgs();
             actArgs.Queues = new List<IAction>();
             undoStack = new Stack<ICommand>();
@@ -57,8 +60,10 @@ namespace ExtractorSharp.Core {
         public bool IsRecord { private set; get; }
 
 
-        public ICommand[] History {
-            get {
+        public ICommand[] History
+        {
+            get
+            {
                 var list = new List<ICommand>();
                 var undo = undoStack.ToArray();
                 Array.Reverse(undo);
@@ -94,19 +99,23 @@ namespace ExtractorSharp.Core {
         /// </summary>
         public event CommandHandler CommandCleared;
 
-        private void OnCommandClear(CommandEventArgs e) {
+        private void OnCommandClear(CommandEventArgs e)
+        {
             CommandCleared?.Invoke(this, e);
         }
 
-        private void OnComandDid(CommandEventArgs e) {
+        private void OnComandDid(CommandEventArgs e)
+        {
             CommandDid?.Invoke(this, e);
         }
 
-        private void OnComandUndid(CommandEventArgs e) {
+        private void OnComandUndid(CommandEventArgs e)
+        {
             CommandUndid?.Invoke(this, e);
         }
 
-        private void OnCommandRedid(CommandEventArgs e) {
+        private void OnCommandRedid(CommandEventArgs e)
+        {
             CommandRedid?.Invoke(this, e);
         }
 
@@ -120,11 +129,13 @@ namespace ExtractorSharp.Core {
         /// </summary>
         public event ActionHandler ActionDid;
 
-        private void OnActionChanged(ActionEventArgs e) {
+        private void OnActionChanged(ActionEventArgs e)
+        {
             ActionChanged?.Invoke(this, e);
         }
 
-        private void OnActionDid(ActionEventArgs e) {
+        private void OnActionDid(ActionEventArgs e)
+        {
             ActionChanged?.Invoke(this, e);
         }
 
@@ -133,23 +144,28 @@ namespace ExtractorSharp.Core {
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="type"></param>
-        public void Registry(string cmd, Type type) {
-            if (Dic.ContainsKey(cmd)) {
+        public void Registry(string cmd, Type type)
+        {
+            if (Dic.ContainsKey(cmd))
+            {
                 Dic.Remove(cmd);
             }
             Dic.Add(cmd, type);
             ReserveDic.Add(type, cmd);
         }
 
-        public void Registry(string cmd, IExecutable exe) {
-            if (ExecuteMap.ContainsKey(cmd)) {
+        public void Registry(string cmd, IExecutable exe)
+        {
+            if (ExecuteMap.ContainsKey(cmd))
+            {
                 ExecuteMap.Remove(cmd);
             }
             ExecuteMap.Add(cmd, exe);
         }
 
 
-        public void ClearMacro() {
+        public void ClearMacro()
+        {
             Macro.Clear();
             actArgs.Mode = QueueChangeMode.RemoveRange;
             OnActionChanged(actArgs);
@@ -158,7 +174,8 @@ namespace ExtractorSharp.Core {
 
         #region 宏命令
 
-        public void Record() {
+        public void Record()
+        {
             IsRecord = true;
             Macro.Clear();
             actArgs.Action = null;
@@ -166,13 +183,16 @@ namespace ExtractorSharp.Core {
             OnActionChanged(actArgs); //触发队列更改事件
         }
 
-        public void Pause() {
+        public void Pause()
+        {
             IsRecord = !IsRecord;
         }
 
 
-        public void AddMacro(ICommand command) {
-            if (command is IAction action) {
+        public void AddMacro(ICommand command)
+        {
+            if (command is IAction action)
+            {
                 //可宏
                 Macro.Add(action);
                 actArgs.Mode = QueueChangeMode.Add;
@@ -186,20 +206,26 @@ namespace ExtractorSharp.Core {
         /// </summary>
         /// <param name="allImage"></param>
         /// <param name="als"></param>
-        internal void Run(bool allImage, params Album[] als) {
+        internal void Run(bool allImage, params Album[] als)
+        {
             IsRecord = false;
-            foreach (var cmd in Macro) {
-                switch (cmd) {
+            foreach (var cmd in Macro)
+            {
+                switch (cmd)
+                {
                     //判断Action的类型
                     case IMutipleAciton mutipleAction:
                         mutipleAction.Action(als);
                         break;
                     case ISingleAction singleAction:
-                        foreach (var al in als) {
+                        foreach (var al in als)
+                        {
                             var indexes = singleAction.Indices;
-                            if (allImage) {
+                            if (allImage)
+                            {
                                 indexes = new int[al.List.Count];
-                                for (var i = 0; i < al.List.Count; i++) {
+                                for (var i = 0; i < al.List.Count; i++)
+                                {
                                     indexes[i] = i;
                                 }
                             }
@@ -223,7 +249,8 @@ namespace ExtractorSharp.Core {
         ///     移出动作序列
         /// </summary>
         /// <param name="range"></param>
-        internal void Delete(params IAction[] range) {
+        internal void Delete(params IAction[] range)
+        {
             foreach (var item in range) Macro.Remove(item);
             actArgs.Mode = QueueChangeMode.RemoveRange;
             OnActionChanged(actArgs);
@@ -236,13 +263,19 @@ namespace ExtractorSharp.Core {
         /// <summary>
         /// </summary>
         /// <param name="step"></param>
-        public void Move(int step) {
-            if (step > 0) {
-                for (var i = 0; i < step; i++) {
+        public void Move(int step)
+        {
+            if (step > 0)
+            {
+                for (var i = 0; i < step; i++)
+                {
                     Redo();
                 }
-            } else {
-                for (var i = step; i < 0; i++) {
+            }
+            else
+            {
+                for (var i = step; i < 0; i++)
+                {
                     Undo();
                 }
             }
@@ -250,11 +283,15 @@ namespace ExtractorSharp.Core {
         }
 
 
-        public object Dispatch(string name,params object[] args) {
-            if (ExecuteMap.ContainsKey(name)) {
+        public object Dispatch(string name, params object[] args)
+        {
+            if (ExecuteMap.ContainsKey(name))
+            {
                 var exe = ExecuteMap[name];
                 return exe.Execute(args);
-            } else {
+            }
+            else
+            {
                 throw new CommandException("NotExistCommand");
             }
         }
@@ -264,27 +301,35 @@ namespace ExtractorSharp.Core {
         /// </summary>
         /// <param name="key"></param>
         /// <param name="args"></param>
-        public void Do(string key, params object[] args) {
-            if (Dic.ContainsKey(key)) {
+        public void Do(string key, params object[] args)
+        {
+            if (Dic.ContainsKey(key))
+            {
                 var type = Dic[key];
-                if (type != null && typeof(ICommand).IsAssignableFrom(type)) {
+                if (type != null && typeof(ICommand).IsAssignableFrom(type))
+                {
                     var cmd = type.CreateInstance() as ICommand;
                     cmd.Do(args);
-                    if (cmd.CanUndo) {
+                    if (cmd.CanUndo)
+                    {
                         undoStack.Push(cmd);
                     }
-                    if (IsRecord) {
+                    if (IsRecord)
+                    {
                         AddMacro(cmd);
                     }
                     redoStack.Clear();
-                    OnComandDid(new CommandEventArgs {
+                    OnComandDid(new CommandEventArgs
+                    {
                         Name = key,
                         Command = cmd,
                         Type = CommandEventType.Do
                     });
                     Current = cmd;
                 }
-            } else {
+            }
+            else
+            {
                 throw new CommandException("NotExistCommand");
             }
         }
@@ -292,12 +337,15 @@ namespace ExtractorSharp.Core {
         /// <summary>
         ///     撤销
         /// </summary>
-        private void Undo() {
-            if (undoStack.Count > 0) {
+        private void Undo()
+        {
+            if (undoStack.Count > 0)
+            {
                 var cmd = undoStack.Pop();
                 cmd.Undo();
                 redoStack.Push(cmd);
-                OnComandUndid(new CommandEventArgs {
+                OnComandUndid(new CommandEventArgs
+                {
                     Name = ReserveDic[cmd.GetType()],
                     Command = cmd,
                     Type = CommandEventType.Undo
@@ -308,12 +356,15 @@ namespace ExtractorSharp.Core {
         /// <summary>
         ///     重做
         /// </summary>
-        private void Redo() {
-            if (redoStack.Count > 0) {
+        private void Redo()
+        {
+            if (redoStack.Count > 0)
+            {
                 var cmd = redoStack.Pop();
                 cmd.Redo();
                 undoStack.Push(cmd);
-                OnCommandRedid(new CommandEventArgs {
+                OnCommandRedid(new CommandEventArgs
+                {
                     Name = ReserveDic[cmd.GetType()],
                     Command = cmd,
                     Type = CommandEventType.Redo
@@ -326,15 +377,18 @@ namespace ExtractorSharp.Core {
 
         #region
 
-        public void ClearCommand() {
+        public void ClearCommand()
+        {
             undoStack.Clear();
             redoStack.Clear();
-            OnCommandClear(new CommandEventArgs {
+            OnCommandClear(new CommandEventArgs
+            {
                 Type = CommandEventType.Clear
             });
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             ClearCommand();
             ClearMacro();
         }

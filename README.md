@@ -8,6 +8,10 @@ ExtractorSharp
 
 更新
 ---
+   + 添加批量导出音效。左侧边栏，右键，选择 `保存所有Ogg`，即可导出勾选的ogg音效文件~
+
+   + [下载 1.7.3.3-special ](https://github.com/Sarofc/ExtractorSharp/releases/tag/1.7.3.3-special)
+---
 
    + 添加批量导出功能。左侧边栏，右键，选择 `保存所有Album`，即可导出勾选的img图片~
    + .net 升级到 4.7.1
